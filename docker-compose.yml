@@ -1,8 +1,12 @@
 services:
   openclaw-gateway:
     container_name: openclaw-gateway
-    privileged: true
     image: ${OPENCLAW_IMAGE}
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
     environment:
       HOME: /home/node
       TERM: xterm-256color

@@ -452,7 +452,10 @@ BASE_URL=http://localhost:3000/gemini-antigravity/v1
 ```bash
 docker run -d \
   --name openclaw-gateway \
-  --privileged \
+  --cap-add=CHOWN \
+  --cap-add=SETUID \
+  --cap-add=SETGID \
+  --cap-add=DAC_OVERRIDE \
   -e MODEL_ID=model id \
   -e BASE_URL=http://xxxxx/v1 \
   -e API_KEY=123456 \
