@@ -45,7 +45,7 @@ sync_config_with_env() {
         echo "配置文件不存在，创建基础骨架..."
         cat > "$config_file" <<EOF
 {
-  "meta": { "lastTouchedVersion": "2026.1.29" },
+  "meta": { "lastTouchedVersion": "2026.2.14" },
   "update": { "checkOnStart": false },
   "browser": {
     "headless": true,
