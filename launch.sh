@@ -11,14 +11,15 @@ cleanup() {
 }
 trap cleanup SIGTERM SIGINT SIGQUIT
 
+OPENCLAW_HOME="$HOME/.openclaw"
+CONFIG_FILE="$OPENCLAW_HOME/openclaw.json"
 # Ensure the directory exists and has the correct permissions
 mkdir -p "$OPENCLAW_HOME"
 if [ "$(id -u)" -eq 0 ]; then
-    chown -R node:node /home/node/.openclaw
+    chown -R node:node $OPENCLAW_HOME
 fi
 
 # Initialize
-CONFIG_FILE="$OPENCLAW_HOME/openclaw.json"
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "================================================================="
     echo "⚠️  OpenClaw configuration not found at: $CONFIG_FILE"
@@ -27,28 +28,16 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo ""
     echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash -c 'openclaw onboard'"
     echo ""
-    echo "After completing the configuration, return here and type 'yes' to continue:"
+    echo "The container will continue running and wait for initialization."
     echo "================================================================="
     
-    while true; do
-        read -p "Have you completed the configuration? (yes/No): " CONFIRM
-        case $CONFIRM in
-            [Yy][Ee][Ss]|[Yy])
-                echo "Checking configuration file..."
-                if [ -f "$CONFIG_FILE" ]; then
-                    echo "✅ Configuration file found. Starting gateway..."
-                    break
-                else
-                    echo "❌ Configuration file still not found at $CONFIG_FILE"
-                    echo "Please make sure you have completed the 'openclaw onboard' setup."
-                fi
-                ;;
-            *)
-                echo "Waiting for you to complete the configuration..."
-                ;;
-        esac
+    while [ ! -f "$CONFIG_FILE" ]; do
+        sleep 1
     done
+    
+    echo "✅ OpenClaw configuration detected. Starting gateway..."
 fi
+
 
 # Launch openclaw gateway
 gosu node openclaw gateway run --verbose &
