@@ -15,6 +15,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
+# Update npm
+RUN npm install -g npm@latest
+
 # Install openclaw
 RUN npm install -g openclaw@latest opencode-ai@latest
 RUN npm install -g playwright && npx playwright install chromium --with-deps
