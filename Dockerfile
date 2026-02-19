@@ -15,9 +15,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Install homebrew
-RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
-
 # Install openclaw
 RUN npm install -g openclaw@latest opencode-ai@latest
 RUN npm install -g playwright && npx playwright install chromium --with-deps
@@ -34,5 +31,9 @@ RUN chown -R node:node /app
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
+
+# Install homebrew
+RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
+
 EXPOSE 18789 18790
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/launch.sh"]
