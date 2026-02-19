@@ -27,14 +27,27 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo ""
     echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash -c 'openclaw onboard'"
     echo ""
-    echo "The container will continue running and wait for initialization."
+    echo "After completing the configuration, return here and type 'yes' to continue:"
     echo "================================================================="
     
-    while [ ! -f "$CONFIG_FILE" ]; do
-        sleep 1
+    while true; do
+        read -p "Have you completed the configuration? (yes/No): " CONFIRM
+        case $CONFIRM in
+            [Yy][Ee][Ss]|[Yy])
+                echo "Checking configuration file..."
+                if [ -f "$CONFIG_FILE" ]; then
+                    echo "✅ Configuration file found. Starting gateway..."
+                    break
+                else
+                    echo "❌ Configuration file still not found at $CONFIG_FILE"
+                    echo "Please make sure you have completed the 'openclaw onboard' setup."
+                fi
+                ;;
+            *)
+                echo "Waiting for you to complete the configuration..."
+                ;;
+        esac
     done
-    
-    echo "✅ OpenClaw configuration detected. Starting gateway..."
 fi
 
 # Launch openclaw gateway
