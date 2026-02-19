@@ -12,16 +12,33 @@ cleanup() {
 trap cleanup SIGTERM SIGINT SIGQUIT
 
 # Ensure the directory exists and has the correct permissions
-OPENCLAW_HOME="/home/node/.openclaw"
 mkdir -p "$OPENCLAW_HOME"
 if [ "$(id -u)" -eq 0 ]; then
     chown -R node:node /home/node/.openclaw
 fi
 
+# Initialize
+CONFIG_FILE="$OPENCLAW_HOME/openclaw.json"
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "================================================================="
+    echo "⚠️  OpenClaw configuration not found at: $CONFIG_FILE"
+    echo "================================================================="
+    echo "Please run the following command to initialize OpenClaw:"
+    echo ""
+    echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash -c 'openclaw onboard'"
+    echo ""
+    echo "The container will continue running and wait for initialization."
+    echo "================================================================="
+    
+    while [ ! -f "$CONFIG_FILE" ]; do
+        sleep 1
+    done
+    
+    echo "✅ OpenClaw configuration detected. Starting gateway..."
+fi
+
 # Launch openclaw gateway
-gosu node openclaw gateway run \
-    --allow-unconfigured \
-    --verbose &
+gosu node openclaw gateway run --verbose &
 GATEWAY_PID=$!
 
 echo "=== OpenClaw Gateway Launched (PID: $GATEWAY_PID) ==="
