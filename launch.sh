@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-
 cleanup() {
     echo "Stopping..."
     if [ -n "$GATEWAY_PID" ]; then
@@ -12,11 +11,15 @@ cleanup() {
 }
 trap cleanup SIGTERM SIGINT SIGQUIT
 
+# Ensure the directory exists and has the correct permissions
+OPENCLAW_HOME="/home/node/.openclaw"
+mkdir -p "$OPENCLAW_HOME"
+if [ "$(id -u)" -eq 0 ]; then
+    chown -R node:node /home/node/.openclaw
+fi
+
 # Launch openclaw gateway
-openclaw gateway run \
-    --bind "$OPENCLAW_GATEWAY_BIND" \
-    --port "$OPENCLAW_GATEWAY_PORT" \
-    --token "$OPENCLAW_GATEWAY_TOKEN" \
+gosu node openclaw gateway run \
     --allow-unconfigured \
     --verbose &
 GATEWAY_PID=$!

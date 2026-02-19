@@ -10,6 +10,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git \
     python3 \
     unzip \
+    gosu \
     websockify \
     ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
@@ -33,7 +34,6 @@ RUN chmod +x /usr/local/bin/launch.sh
 
 # Allow non-root user to write temp files during runtime/tests.
 RUN chown -R node:node /app
-RUN chown -R node:node /home/node
 
 
 WORKDIR /home/node
