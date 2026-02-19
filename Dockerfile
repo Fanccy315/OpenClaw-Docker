@@ -12,7 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     python3 \
     unzip \
     websockify \
-    ca-certificates \
+    ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # Install homebrew
