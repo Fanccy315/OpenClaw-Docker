@@ -1,0 +1,21 @@
+services:
+  openclaw:
+    image: ${OPENCLAW_IMAGE}
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    # 以root启动，launch.sh修复挂载卷权限后再降权以node运行网关
+    user: 0:0
+    environment:
+      TZ: Asia/Shanghai
+      TERM: xterm-256color
+      HOME: /home/node
+      CONTAINER_NAME: ${CONTAINER_NAME}
+    volumes:
+      - ${OPENCLAW_HOME}:/home/node/.openclaw
+      # 使用匿名卷排除 extensions 目录，使用镜像中预装的插件
+      - /home/node/.openclaw/extensions
+    ports:
+      - "18789:18789"
+      - "18790:18790"
+    init: true
+    
