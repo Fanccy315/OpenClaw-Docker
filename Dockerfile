@@ -3,7 +3,6 @@ FROM node:22-bookworm
 RUN corepack enable
 
 WORKDIR /app
-
 # Install deps
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -34,10 +33,22 @@ RUN chmod +x /usr/local/bin/launch.sh
 
 # Allow non-root user to write temp files during runtime/tests.
 RUN chown -R node:node /app
+RUN chown -R node:node /home/node
 
+
+WORKDIR /home/node
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
+
+# Install plugin-Xueheng-Li/openclaw-wechat
+RUN mkdir -p /home/node/.openclaw/extensions && \
+    cd /home/node/.openclaw/extensions && \
+    git clone https://github.com/Xueheng-Li/openclaw-wechat.git && \
+    cd openclaw-wechat && \
+    npm install && \
+    openclaw plugins install -l .
+
 EXPOSE 18789 18790
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/launch.sh"]
