@@ -20,6 +20,11 @@ RUN npm install -g openclaw@latest opencode-ai@latest
 RUN npm install -g playwright && npx playwright install chromium --with-deps
 RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 
+# Install homebrew, skip root check
+RUN touch /.dockerenv 
+RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
+RUN rm /.dockerenv 
+
 # Copy launch script
 COPY ./launch.sh /usr/local/bin/launch.sh
 RUN chmod +x /usr/local/bin/launch.sh
@@ -31,9 +36,5 @@ RUN chown -R node:node /app
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
-
-# Install homebrew
-RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
-
 EXPOSE 18789 18790
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/launch.sh"]
