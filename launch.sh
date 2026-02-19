@@ -16,11 +16,12 @@ trap cleanup SIGTERM SIGINT SIGQUIT
 openclaw gateway run \
     --bind "$OPENCLAW_GATEWAY_BIND" \
     --port "$OPENCLAW_GATEWAY_PORT" \
-    --token "$OPENCLAW_GATEWAY_TOKEN" &
+    --token "$OPENCLAW_GATEWAY_TOKEN" \
+    --allow-unconfigured &
 GATEWAY_PID=$!
 
 echo "=== OpenClaw Gateway Launched (PID: $GATEWAY_PID) ==="
 wait "$GATEWAY_PID"
 EXIT_CODE=$?
-echo "=== OpenClaw Gateway Exited (退出码: $EXIT_CODE) ==="
+echo "=== OpenClaw Gateway Exited ($EXIT_CODE) ==="
 exit $EXIT_CODE
