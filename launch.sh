@@ -17,7 +17,8 @@ openclaw gateway run \
     --bind "$OPENCLAW_GATEWAY_BIND" \
     --port "$OPENCLAW_GATEWAY_PORT" \
     --token "$OPENCLAW_GATEWAY_TOKEN" \
-    --allow-unconfigured &
+    --allow-unconfigured \
+    --verbose &
 GATEWAY_PID=$!
 
 echo "=== OpenClaw Gateway Launched (PID: $GATEWAY_PID) ==="
