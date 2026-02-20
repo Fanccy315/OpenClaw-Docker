@@ -10,6 +10,10 @@ services:
       TERM: xterm-256color
       HOME: /home/node
       CONTAINER_NAME: ${CONTAINER_NAME}
+      # Gateway 配置
+      OPENCLAW_GATEWAY_BIND: ${OPENCLAW_GATEWAY_BIND}
+      OPENCLAW_GATEWAY_PORT: ${OPENCLAW_GATEWAY_PORT}
+      OPENCLAW_BRIDGE_PORT: ${OPENCLAW_BRIDGE_PORT}
     volumes:
       - ${OPENCLAW_HOME}:/home/node/.openclaw
       # 使用匿名卷排除 extensions 目录，使用镜像中预装的插件
