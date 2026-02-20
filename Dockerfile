@@ -35,8 +35,11 @@ RUN chown -R node:node /app
 
 # Install homebrew
 RUN useradd --create-home linuxbrew
+RUN chmod -R g+w /home/linuxbrew
+RUN usermod -a -G linuxbrew node
 USER linuxbrew
 RUN NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 
 
 WORKDIR /home/node
