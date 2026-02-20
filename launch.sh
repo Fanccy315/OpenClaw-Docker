@@ -3,6 +3,7 @@ set -e
 
 OPENCLAW_HOME="$HOME/.openclaw"
 CONFIG_FILE="$OPENCLAW_HOME/openclaw.json"
+SETUP_OK="$OPENCLAW_HOME/setup-ok"
 
 # Ensure the directory exists and has the correct permissions
 mkdir -p "$OPENCLAW_HOME"
@@ -15,24 +16,24 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo "================================================================="
     echo "⚠️  OpenClaw configuration not found at: $CONFIG_FILE"
     echo "================================================================="
+    echo ""
     echo "Please run the following command to initialize OpenClaw:"
     echo ""
     echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash -c 'openclaw setup --wizard'"
     echo ""
-    echo "The container will continue running and launch openclaw gateway."
+    echo "After completing the setup, create the marker file to continue:"
+    echo ""
+    echo "  touch $HOME/.openclaw/setup-ok"
+    echo ""
     echo "================================================================="
+
+    # Wait for setup-ok file to be created
+    while [ ! -f "$SETUP_OK" ]; do
+        sleep 1
+    done
+    echo "Setup marker file detected, proceeding to launch gateway..."
+    rm "$SETUP_OK_FILE"
 fi
 
 # Launch openclaw gateway
-gosu node openclaw gateway run \
-    --bind "$OPENCLAW_GATEWAY_BIND" \
-    --port "$OPENCLAW_GATEWAY_PORT" \
-    --allow-unconfigured \
-    --verbose &
-GATEWAY_PID=$!
-
-echo "=== OpenClaw Gateway Launched (PID: $GATEWAY_PID) ==="
-wait "$GATEWAY_PID"
-EXIT_CODE=$?
-echo "=== OpenClaw Gateway Exited ($EXIT_CODE) ==="
-exit $EXIT_CODE
+exec gosu node openclaw gateway run --verbose
