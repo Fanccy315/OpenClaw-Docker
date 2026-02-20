@@ -17,6 +17,7 @@ CONFIG_FILE="$OPENCLAW_HOME/openclaw.json"
 mkdir -p "$OPENCLAW_HOME"
 if [ "$(id -u)" -eq 0 ]; then
     chown -R node:node $OPENCLAW_HOME
+    chmod g+w /home/linuxbrew
 fi
 
 # Initialize
@@ -40,7 +41,11 @@ fi
 
 
 # Launch openclaw gateway
-gosu node openclaw gateway run --verbose &
+exec gosu node openclaw gateway run \
+    --bind "$OPENCLAW_GATEWAY_BIND" \
+    --port "$OPENCLAW_GATEWAY_PORT" \
+    --token "$OPENCLAW_GATEWAY_TOKEN" \
+    --verbose &
 GATEWAY_PID=$!
 
 echo "=== OpenClaw Gateway Launched (PID: $GATEWAY_PID) ==="
