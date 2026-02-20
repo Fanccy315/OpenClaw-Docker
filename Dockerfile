@@ -30,11 +30,13 @@ RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 COPY ./launch.sh /usr/local/bin/launch.sh
 RUN chmod +x /usr/local/bin/launch.sh
 
-# Prepare install homebrew
-RUN useradd --create-home linuxbrew
-
 # Allow non-root user to write temp files during runtime/tests.
 RUN chown -R node:node /app
+
+# Install homebrew
+RUN useradd --create-home linuxbrew
+USER linuxbrew
+RUN NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
 
 
 WORKDIR /home/node
@@ -42,9 +44,6 @@ WORKDIR /home/node
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
-
-# Install homebrew
-RUN NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
 
 # Install plugin-Xueheng-Li/openclaw-wechat
 RUN mkdir -p /home/node/.openclaw/extensions && \
