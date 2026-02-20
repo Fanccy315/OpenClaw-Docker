@@ -6,8 +6,7 @@ WORKDIR /app
 # Install deps
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    curl \
-    git \
+    build-essential procps curl file git
     python3 \
     unzip \
     gosu \
@@ -30,6 +29,9 @@ RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 # Copy launch script
 COPY ./launch.sh /usr/local/bin/launch.sh
 RUN chmod +x /usr/local/bin/launch.sh
+
+# Prepare install homebrew
+RUN useradd --create-home linuxbrew
 
 # Allow non-root user to write temp files during runtime/tests.
 RUN chown -R node:node /app
