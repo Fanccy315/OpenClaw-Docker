@@ -29,22 +29,15 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo ""
     echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash -c 'openclaw onboard'"
     echo ""
-    echo "The container will continue running and wait for initialization."
+    echo "The container will continue running and launch openclaw gateway."
     echo "================================================================="
-    
-    while [ ! -f "$CONFIG_FILE" ]; do
-        sleep 1
-    done
-    
-    echo "✅ OpenClaw configuration detected. Starting gateway..."
 fi
-
 
 # Launch openclaw gateway
 exec gosu node openclaw gateway run \
     --bind "$OPENCLAW_GATEWAY_BIND" \
     --port "$OPENCLAW_GATEWAY_PORT" \
-    --token "$OPENCLAW_GATEWAY_TOKEN" \
+    --allow-unconfigured \
     --verbose &
 GATEWAY_PID=$!
 
