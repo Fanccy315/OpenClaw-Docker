@@ -15,7 +15,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     websockify \
     ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-RUN npx playwright install chromium --with-deps
+RUN npx playwright install-deps chromium
 
 # Update npm
 RUN npm install -g npm@latest
@@ -49,8 +49,8 @@ RUN npm config set prefix "/app"
 ENV PATH="/app/bin:${PATH}"
 
 # Install openclaw
-RUN npm install -g openclaw@latest opencode-ai@latest
-RUN npm install -g playwright
+RUN npm install -g openclaw@latest
+RUN npm install -g playwright && npx playwright install chromium
 RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 
 # Install plugin-Xueheng-Li/openclaw-wechat
