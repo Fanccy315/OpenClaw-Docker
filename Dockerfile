@@ -26,15 +26,6 @@ RUN npm install -g npm@latest
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="/root/.bun/bin:${PATH}"
 
-# Install openclaw
-RUN npm install -g openclaw@latest opencode-ai@latest
-RUN npm install -g playwright && npx playwright install chromium --with-deps
-RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
-
-# Copy launch script
-COPY ./launch.sh /usr/local/bin/launch.sh
-RUN chmod +x /usr/local/bin/launch.sh
-
 # Install homebrew
 RUN useradd --create-home linuxbrew
 USER linuxbrew
@@ -44,12 +35,21 @@ USER root
 RUN chmod -R g+w /home/linuxbrew
 RUN usermod -a -G linuxbrew node
 
+# Copy launch script
+COPY ./launch.sh /usr/local/bin/launch.sh
+RUN chmod +x /usr/local/bin/launch.sh
+
 
 WORKDIR /home/node
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
+
+# Install openclaw
+RUN npm install -g openclaw@latest opencode-ai@latest
+RUN npm install -g playwright && npx playwright install chromium --with-deps
+RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 
 # Install plugin-Xueheng-Li/openclaw-wechat
 RUN mkdir -p /home/node/.openclaw/extensions && \
