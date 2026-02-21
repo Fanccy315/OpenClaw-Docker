@@ -3,10 +3,7 @@ FROM node:22-bookworm
 RUN corepack enable
 
 WORKDIR /app
-# Set global package path
 RUN chown -R node:node /app
-RUN npm config set prefix "/app"
-ENV PATH="/app/bin:${PATH}"
 
 # Install deps
 RUN apt-get update
@@ -18,6 +15,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     websockify \
     ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+RUN npx playwright install chromium --with-deps
 
 # Update npm
 RUN npm install -g npm@latest
@@ -35,12 +33,6 @@ USER root
 RUN chmod -R g+w /home/linuxbrew
 RUN usermod -a -G linuxbrew node
 
-# Install openclaw
-RUN npm install -g openclaw@latest
-# Install playwright
-RUN npm install -g playwright && npx playwright install chromium --with-deps
-RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
-
 # Copy launch script
 COPY ./launch.sh /usr/local/bin/launch.sh
 RUN chmod +x /usr/local/bin/launch.sh
@@ -51,7 +43,15 @@ WORKDIR /home/node
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
+
+# Set global package path
 RUN npm config set prefix "/app"
+ENV PATH="/app/bin:${PATH}"
+
+# Install openclaw
+RUN npm install -g openclaw@latest opencode-ai@latest
+RUN npm install -g playwright
+RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 
 # Install plugin-Xueheng-Li/openclaw-wechat
 RUN mkdir -p /home/node/.openclaw/extensions && \
