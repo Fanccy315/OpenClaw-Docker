@@ -40,5 +40,4 @@ RUN mkdir -p /home/node/.openclaw/extensions && \
     openclaw plugins install -l .
 
 EXPOSE 18789 18790
-ENTRYPOINT ["/bin/bash", "/usr/local/bin/launch.sh"]
 CMD ["node", "openclaw", "gateway", "run", "--verbose"]
