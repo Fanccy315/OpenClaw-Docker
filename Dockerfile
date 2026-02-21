@@ -2,20 +2,15 @@ FROM node:22-bookworm
 
 RUN corepack enable
 
-WORKDIR /app
-RUN chown -R node:node /app
-
 # Install deps
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential procps curl file git \
     python3 \
     unzip \
-    gosu \
     websockify \
     ca-certificates
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-RUN npx playwright install-deps chromium
 
 # Update npm
 RUN npm install -g npm@latest
@@ -28,29 +23,12 @@ ENV PATH="/root/.bun/bin:${PATH}"
 RUN useradd --create-home linuxbrew
 USER linuxbrew
 RUN NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 USER root
-RUN chmod -R g+w /home/linuxbrew
-RUN usermod -a -G linuxbrew node
-
-# Copy launch script
-COPY ./launch.sh /usr/local/bin/launch.sh
-RUN chmod +x /usr/local/bin/launch.sh
-
-
-WORKDIR /home/node
-# Security hardening: Run as non-root user
-# The node:22-bookworm image includes a 'node' user (uid 1000)
-# This reduces the attack surface by preventing container escape via root privileges
-USER node
-
-# Set global package path
-RUN npm config set prefix "/app"
-ENV PATH="/app/bin:${PATH}"
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 
 # Install openclaw
 RUN npm install -g openclaw@latest
-RUN npm install -g playwright && npx playwright install chromium
+RUN npm install -g playwright && npx playwright install chromium --with-deps
 RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 
 # Install plugin-Xueheng-Li/openclaw-wechat
@@ -63,3 +41,4 @@ RUN mkdir -p /home/node/.openclaw/extensions && \
 
 EXPOSE 18789 18790
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/launch.sh"]
+CMD ["node", "openclaw", "gateway", "run", "--verbose"]
