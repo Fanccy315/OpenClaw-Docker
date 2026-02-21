@@ -9,6 +9,7 @@ RUN chown -R node:node /app
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential procps curl file git \
+    chromium \
     python3 \
     unzip \
     gosu \
