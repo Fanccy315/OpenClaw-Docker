@@ -3,6 +3,11 @@ FROM node:22-bookworm
 RUN corepack enable
 
 WORKDIR /app
+# Set global package path
+RUN chown -R node:node /app
+RUN npm config set prefix "/app"
+ENV PATH="/app/bin:${PATH}"
+
 # Install deps
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -30,16 +35,14 @@ RUN npm install -g playwright-extra puppeteer-extra-plugin-stealth
 COPY ./launch.sh /usr/local/bin/launch.sh
 RUN chmod +x /usr/local/bin/launch.sh
 
-# Allow non-root user to write temp files during runtime/tests.
-RUN chown -R node:node /app
-
 # Install homebrew
 RUN useradd --create-home linuxbrew
-RUN chmod -R g+w /home/linuxbrew
-RUN usermod -a -G linuxbrew node
 USER linuxbrew
 RUN NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+USER root
+RUN chmod -R g+w /home/linuxbrew
+RUN usermod -a -G linuxbrew node
 
 
 WORKDIR /home/node

@@ -16,24 +16,17 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo "================================================================="
     echo "⚠️  OpenClaw configuration not found at: $CONFIG_FILE"
     echo "================================================================="
-    echo ""
     echo "Please run the following command to initialize OpenClaw:"
     echo ""
-    echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash -c 'openclaw setup --wizard'"
+    echo "  docker exec -it -u node $CONTAINER_NAME /bin/bash"
+    echo "  openclaw setup --wizard"
     echo ""
-    echo "After completing the setup, create the marker file to continue:"
-    echo ""
-    echo "  touch $HOME/.openclaw/setup-ok"
-    echo ""
+    echo "The container will launch openclaw gateway with default config."
     echo "================================================================="
-
-    # Wait for setup-ok file to be created
-    while [ ! -f "$SETUP_OK" ]; do
-        sleep 1
-    done
-    echo "Setup marker file detected, proceeding to launch gateway..."
-    rm "$SETUP_OK_FILE"
 fi
 
 # Launch openclaw gateway
-exec gosu node openclaw gateway run --verbose
+exec gosu node openclaw gateway run \
+    --bind lan \
+    --allow-unconfigured \
+    --verbose
