@@ -3,10 +3,7 @@ FROM node:22-bookworm
 RUN corepack enable
 
 WORKDIR /app
-# Set global package path
 RUN chown -R node:node /app
-RUN npm config set prefix "/app"
-ENV PATH="/app/bin:${PATH}"
 
 # Install deps
 RUN apt-get update
@@ -45,6 +42,10 @@ WORKDIR /home/node
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
+
+# Set global package path
+RUN npm config set prefix "/app"
+ENV PATH="/app/bin:${PATH}"
 
 # Install openclaw
 RUN npm install -g openclaw@latest opencode-ai@latest
